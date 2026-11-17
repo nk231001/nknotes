@@ -1,0 +1,2845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>index</title>
+  <style>
+
+  </style>
+</head>
+<body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#09090d">
+  <title>NK Notes - Made by Nitish</title>
+  <link id="pwa-manifest" rel="manifest">
+  <link id="pwa-icon" rel="apple-touch-icon">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: radial-gradient(circle at 20% 10%, #1a1829 0%, #09090d 55%, #000000 100%);
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ================= SPLASH SCREEN ANIMATION ================= */
+    .splash-screen {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, #1b1729 0%, #000000 100%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    .splash-screen.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .splash-logo {
+      width: 86px;
+      height: 86px;
+      border-radius: 26px;
+      background: linear-gradient(135deg, #f5b400 0%, #ea580c 100%);
+      color: #000000;
+      font-size: 2.3rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 40px rgba(245, 180, 0, 0.45);
+      animation: popIn 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    .splash-title {
+      font-size: 2.1rem;
+      font-weight: 700;
+      margin-top: 1.1rem;
+      background: linear-gradient(90deg, #ffffff, #f5b400);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      opacity: 0;
+      animation: slideUpFade 0.6s ease 0.3s forwards;
+    }
+
+    .splash-credit {
+      font-size: 0.9rem;
+      color: #a1a1aa;
+      margin-top: 0.35rem;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: slideUpFade 0.6s ease 0.55s forwards;
+    }
+
+    .splash-loader {
+      width: 145px;
+      height: 3px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 4px;
+      margin-top: 1.8rem;
+      overflow: hidden;
+      opacity: 0;
+      animation: slideUpFade 0.5s ease 0.7s forwards;
+    }
+
+    .splash-bar {
+      height: 100%;
+      width: 0%;
+      background: #f5b400;
+      animation: loadBar 1.4s ease-in-out 0.75s forwards;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.4) rotate(-12deg); opacity: 0; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    @keyframes slideUpFade {
+      0% { transform: translateY(14px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes loadBar {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+
+    /* ================= APP SHELL ================= */
+    .app-shell {
+      width: 100%;
+      max-width: 560px;
+      min-height: 100vh;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .view-page {
+      display: none;
+      flex-direction: column;
+      min-height: 100vh;
+      flex: 1;
+    }
+
+    .view-page.active { display: flex; }
+
+    /* ================= 1. WIDGET HOME VIEW (YOUR PREFERRED DESIGN) ================= */
+    .home-view {
+      padding: 1rem 1.15rem 6.5rem;
+    }
+
+    .launcher-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.2rem;
+      gap: 0.45rem;
+    }
+
+    .brand-chip {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #f5b400;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      white-space: nowrap;
+    }
+
+    .pill-switcher {
+      display: flex;
+      background: rgba(255, 255, 255, 0.09);
+      backdrop-filter: blur(16px);
+      padding: 0.25rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .switch-tab {
+      background: transparent;
+      border: none;
+      color: #d4d4d8;
+      padding: 0.42rem 1.05rem;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .switch-tab.active {
+      background: #ffffff;
+      color: #09090b;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .top-right-group {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .icon-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      cursor: pointer;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .widget-section-title {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: #a1a1aa;
+      margin: 0.4rem 0 0.75rem 0.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* WIDE FROSTED WIDGET CARDS */
+    .widgets-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.95rem;
+    }
+
+    .widget-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 26px;
+      padding: 1.05rem;
+      min-height: 175px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: transform 0.18s ease, background 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .widget-card:active {
+      transform: scale(0.97);
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .widget-card.wide-span {
+      grid-column: span 2;
+      min-height: 148px;
+    }
+
+    .widget-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .widget-pill-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.24rem 0.65rem;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.4);
+      color: #f5b400;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .card-quick-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .mini-circle-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #e4e4e7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .mini-circle-btn.pinned {
+      background: rgba(245, 180, 0, 0.16);
+      border-color: rgba(245, 180, 0, 0.38);
+      color: #f5b400;
+    }
+
+    .widget-title {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-top: 0.55rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.3;
+    }
+
+    .widget-preview {
+      font-size: 0.82rem;
+      color: #d4d4d8;
+      margin-top: 0.4rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.4;
+      opacity: 0.85;
+    }
+
+    .widget-media-strip {
+      display: flex;
+      gap: 0.45rem;
+      margin-top: 0.65rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .w-mini-thumb {
+      width: 42px;
+      height: 42px;
+      border-radius: 11px;
+      object-fit: cover;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .w-app-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+      color: #e4e4e7;
+    }
+
+    .widget-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.7rem;
+      font-size: 0.72rem;
+      color: #a1a1aa;
+    }
+
+    /* Bottom Dock */
+    .bottom-dock {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 2.2rem);
+      max-width: 520px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      z-index: 30;
+    }
+
+    .dock-search-box {
+      flex: 1;
+      background: rgba(34, 34, 40, 0.86);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      padding: 0.75rem 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .dock-search-box input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .dock-search-box input::placeholder { color: #a1a1aa; }
+
+    .dock-add-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f5b400, #ea580c);
+      color: #000000;
+      border: none;
+      font-size: 1.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(245, 180, 0, 0.4);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .dock-add-btn:active { transform: scale(0.92); }
+
+    /* ================= 2. FROSTED NOTEBOOKS & SETTINGS SUBPAGES ================= */
+    .subpage-wrap {
+      padding: 1rem 1.15rem 3rem;
+    }
+
+    .subpage-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.3rem;
+    }
+
+    .subpage-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .frosted-group {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 22px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    .frosted-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.15rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .frosted-row:last-child { border-bottom: none; }
+    .frosted-row:active { background: rgba(255, 255, 255, 0.12); }
+
+    .f-row-left {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      font-size: 0.98rem;
+      font-weight: 500;
+    }
+
+    .f-row-left svg { color: #f5b400; flex-shrink: 0; }
+
+    .f-row-right {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.88rem;
+      color: #a1a1aa;
+    }
+
+    .f-row-sub {
+      font-size: 0.8rem;
+      color: #a1a1aa;
+      margin-top: 0.25rem;
+      line-height: 1.4;
+    }
+
+    /* Gold Toggle Switch */
+    .gold-switch {
+      position: relative;
+      width: 48px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .gold-switch input { opacity: 0; width: 0; height: 0; }
+
+    .gold-slider {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(255,255,255,0.18);
+      border-radius: 999px;
+      transition: 0.25s;
+      cursor: pointer;
+    }
+
+    .gold-slider::before {
+      content: '';
+      position: absolute;
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      transition: 0.25s;
+    }
+
+    .gold-switch input:checked + .gold-slider { background-color: #f5b400; }
+    .gold-switch input:checked + .gold-slider::before { transform: translateX(20px); }
+
+    /* ================= 3. NOTE EDITOR VIEW ================= */
+    .skin-black { background-color: #09090d; }
+    .skin-midnight { background-color: #0c1526; }
+    .skin-forest { background-color: #0b1f17; }
+    .skin-burgundy { background-color: #240d14; }
+    .skin-amber { background-color: #241a08; }
+
+    .editor-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.85rem 1rem;
+    }
+
+    .editor-top-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .done-btn {
+      background: #f5b400;
+      border: none;
+      color: #000000;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0.45rem 0.95rem;
+      border-radius: 999px;
+    }
+
+    .find-in-note-bar {
+      display: none;
+      padding: 0.5rem 1.2rem;
+      background-color: rgba(255,255,255,0.06);
+      gap: 0.6rem;
+      align-items: center;
+    }
+
+    .find-in-note-bar.active { display: flex; }
+
+    .find-in-note-bar input {
+      flex: 1;
+      background: #000;
+      border: 1px solid #333;
+      color: #fff;
+      padding: 0.5rem 0.75rem;
+      border-radius: 10px;
+      outline: none;
+    }
+
+    .editor-meta-row {
+      padding: 0.3rem 1.25rem 0.85rem;
+      font-size: 0.8rem;
+      color: #a1a1aa;
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      flex-wrap: wrap;
+    }
+
+    .custom-cat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(245, 180, 0, 0.14);
+      border: 1px solid rgba(245, 180, 0, 0.32);
+      color: #f5b400;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    .reminder-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: rgba(245, 180, 0, 0.16);
+      color: #f5b400;
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      margin: 0 1.25rem 0.7rem;
+      width: fit-content;
+    }
+
+    .editor-title-input {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 1.55rem;
+      font-weight: 700;
+      padding: 0.4rem 1.25rem;
+      outline: none;
+      width: 100%;
+    }
+
+    .editor-title-input::placeholder { color: #52525b; }
+
+    /* Blocks: Checklists, Spreadsheets & Media Attachments */
+    .blocks-container {
+      padding: 0 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .todo-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 0.55rem 0.8rem;
+      border-radius: 12px;
+    }
+
+    .todo-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #f5b400;
+    }
+
+    .todo-item input[type="text"] {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 0.98rem;
+      outline: none;
+    }
+
+    .todo-item input[type="text"].done {
+      text-decoration: line-through;
+      color: #8e8e93;
+    }
+
+    /* Interactive Spreadsheet Table */
+    .sheet-card {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 0.8rem;
+      overflow-x: auto;
+    }
+
+    .sheet-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 280px;
+    }
+
+    .sheet-table td {
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 0.4rem;
+    }
+
+    .sheet-table input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 0.88rem;
+      outline: none;
+    }
+
+    /* Media Attachment Card */
+    .att-card {
+      background-color: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 0.8rem;
+    }
+
+    .att-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      gap: 0.5rem;
+    }
+
+    .att-name {
+      font-size: 0.82rem;
+      color: #e4e4e7;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .att-share-btn {
+      background: rgba(245, 180, 0, 0.2);
+      color: #f5b400;
+      border: none;
+      padding: 0.25rem 0.6rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .att-remove-btn {
+      background: rgba(239, 68, 68, 0.22);
+      color: #f87171;
+      border: none;
+      padding: 0.25rem 0.6rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .att-card img,
+    .att-card video {
+      width: 100%;
+      max-height: 320px;
+      border-radius: 12px;
+      object-fit: contain;
+      background: #000;
+      display: block;
+    }
+
+    .att-card audio {
+      width: 100%;
+      height: 42px;
+    }
+
+    .doc-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      background: rgba(0,0,0,0.4);
+      padding: 0.75rem;
+      border-radius: 12px;
+    }
+
+    .doc-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(245, 180, 0, 0.18);
+      color: #f5b400;
+      font-weight: 800;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .doc-btn {
+      background: #27272a;
+      color: #fff;
+      border: none;
+      padding: 0.45rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .doc-btn.primary { background: #f5b400; color: #000; }
+
+    .editor-textarea {
+      flex: 1;
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: #f4f4f5;
+      font-size: 1.05rem;
+      line-height: 1.65;
+      padding: 0.5rem 1.25rem 7.5rem;
+      outline: none;
+      resize: none;
+      min-height: 240px;
+    }
+
+    .editor-textarea::placeholder { color: #52525b; }
+    .editor-textarea.font-large { font-size: 1.28rem; }
+    .editor-textarea.font-bold { font-weight: 700; }
+    .editor-textarea.font-italic { font-style: italic; }
+
+    /* Slash Command Quick Popup */
+    .slash-popup {
+      display: none;
+      position: fixed;
+      bottom: 85px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 2.4rem);
+      max-width: 480px;
+      background: rgba(30, 30, 36, 0.96);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 18px;
+      padding: 0.4rem;
+      z-index: 35;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.9);
+    }
+
+    .slash-popup.active { display: block; }
+
+    /* Bottom Floating Pill Toolbar */
+    .bottom-toolbar-wrap {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 25;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .subbar-popup {
+      display: none;
+      background: rgba(30, 30, 36, 0.96);
+      backdrop-filter: blur(20px);
+      padding: 0.55rem;
+      border-radius: 20px;
+      gap: 0.45rem;
+      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .subbar-popup.active { display: flex; }
+
+    .fmt-btn {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.84rem;
+      padding: 0.48rem 0.85rem;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .fmt-btn.active {
+      background-color: #f5b400;
+      color: #000;
+      border-color: #f5b400;
+    }
+
+    .bottom-pill-bar {
+      background-color: rgba(34, 34, 40, 0.94);
+      backdrop-filter: blur(18px);
+      padding: 0.65rem 1.5rem;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 1.7rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+      border: 1px solid rgba(255,255,255,0.14);
+    }
+
+    .tool-icon-btn {
+      background: none;
+      border: none;
+      color: #f4f4f5;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.25rem;
+    }
+
+    .tool-icon-btn.recording {
+      color: #ef4444;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.22); }
+      100% { transform: scale(1); }
+    }
+
+    /* ================= 4. FROSTED BOTTOM SHEETS (ADD & SHARE) ================= */
+    .sheet-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+      z-index: 60;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .sheet-backdrop.active { display: flex; }
+
+    /* Frosted Add Bottom Sheet (Photos, Camera, Doodle, Spreadsheet, Files, Video, Audio) */
+    .frosted-add-sheet {
+      background: rgba(28, 28, 34, 0.96);
+      backdrop-filter: blur(24px);
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+      width: 100%;
+      max-width: 560px;
+      border-radius: 28px 28px 0 0;
+      padding: 1.35rem 1.35rem 2.2rem;
+      animation: sheetUp 0.22s ease;
+    }
+
+    @keyframes sheetUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .sheet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .sheet-header h3 { font-size: 1.2rem; font-weight: 700; }
+
+    .sheet-close-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #d4d4d8;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .add-tiles-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.1rem 0.75rem;
+    }
+
+    .add-tile-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.45rem;
+      cursor: pointer;
+      position: relative;
+      background: none;
+      border: none;
+      color: #d4d4d8;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .add-tile-box {
+      width: 62px;
+      height: 62px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #f5b400;
+      transition: transform 0.15s, background 0.15s;
+    }
+
+    .add-tile-item:active .add-tile-box {
+      transform: scale(0.93);
+      background: rgba(245, 180, 0, 0.2);
+    }
+
+    .add-tile-item input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    /* Frosted Share Bottom Sheet (Share as text, Share as image, Share via link, Share all apps & files, Cancel) */
+    .frosted-share-sheet {
+      background: rgba(28, 28, 34, 0.96);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      width: calc(100% - 1.5rem);
+      max-width: 510px;
+      border-radius: 26px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      animation: sheetUp 0.22s ease;
+    }
+
+    .share-sheet-title {
+      text-align: center;
+      padding: 1.1rem;
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: #ffffff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .share-sheet-btn {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      color: #f5b400;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .share-sheet-btn:last-child { border-bottom: none; color: #a1a1aa; }
+    .share-sheet-btn:active { background: rgba(255, 255, 255, 0.08); }
+
+    /* ================= 5. DROPDOWN MENUS & MODALS ================= */
+    .menu-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+    }
+
+    .menu-overlay.active { display: block; }
+
+    .dropdown-menu {
+      position: fixed;
+      top: 58px;
+      right: max(16px, calc(50vw - 260px));
+      width: 225px;
+      background: rgba(30, 30, 35, 0.96);
+      backdrop-filter: blur(22px);
+      border-radius: 18px;
+      padding: 0.4rem;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .menu-item {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: #f4f4f5;
+      padding: 0.78rem 0.9rem;
+      border-radius: 12px;
+      text-align: left;
+      font-size: 0.92rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .menu-item:active { background-color: rgba(255, 255, 255, 0.1); }
+    .menu-item svg { color: #a1a1aa; flex-shrink: 0; }
+    .menu-item.danger { color: #ef4444; }
+    .menu-item.danger svg { color: #ef4444; }
+
+    .menu-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+      margin: 0.2rem 0.6rem;
+    }
+
+    /* Center Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(6px);
+      z-index: 70;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-backdrop.active { display: flex; }
+
+    .modal-card {
+      background: #1c1c21;
+      width: 100%;
+      max-width: 390px;
+      border-radius: 24px;
+      padding: 1.4rem;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+      max-height: 86vh;
+      overflow-y: auto;
+    }
+
+    .modal-card h3 { margin-bottom: 0.95rem; font-size: 1.15rem; font-weight: 700; }
+
+    .cat-option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .cat-option-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.85rem 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      color: #f4f4f5;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .cat-option-row.selected {
+      background: rgba(245, 180, 0, 0.14);
+      border-color: #f5b400;
+      color: #f5b400;
+      font-weight: 600;
+    }
+
+    .radio-circle {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid #71717a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cat-option-row.selected .radio-circle { border-color: #f5b400; }
+    .cat-option-row.selected .radio-circle::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #f5b400;
+    }
+
+    .modal-input,
+    .modal-textarea {
+      width: 100%;
+      background: #111114;
+      border: 1px solid #323238;
+      color: #fff;
+      padding: 0.78rem;
+      border-radius: 12px;
+      margin-bottom: 0.9rem;
+      outline: none;
+      font-size: 0.95rem;
+    }
+
+    .star-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      justify-content: center;
+    }
+
+    .star-btn {
+      background: #141417;
+      border: 1px solid #333;
+      color: #71717a;
+      font-size: 1.5rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .star-btn.active { color: #f5b400; border-color: #f5b400; }
+
+    .skins-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.7rem;
+      margin: 1rem 0;
+    }
+
+    .skin-swatch {
+      height: 44px;
+      border-radius: 12px;
+      border: 2px solid #444;
+      cursor: pointer;
+    }
+
+    .skin-swatch.active { border-color: #f5b400; }
+
+    .modal-btns {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.7rem;
+      margin-top: 0.75rem;
+    }
+
+    .modal-btn {
+      padding: 0.65rem 1.15rem;
+      border-radius: 12px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .modal-btn.cancel { background: #2c2c32; color: #fff; }
+    .modal-btn.confirm { background: #f5b400; color: #000; }
+
+    .toast {
+      position: fixed;
+      bottom: 95px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #27272a;
+      color: #fff;
+      padding: 0.65rem 1.25rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+      z-index: 95;
+      white-space: nowrap;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== STARTUP SPLASH ANIMATION ==================== -->
+  <div id="splash-screen" class="splash-screen">
+    <div class="splash-logo">NK</div>
+    <div class="splash-title">NK Notes</div>
+    <div class="splash-credit">Made by Nitish</div>
+    <div class="splash-loader"><div class="splash-bar"></div></div>
+  </div>
+
+  <div class="app-shell">
+    <!-- ==================== 1. WIDGET HOME VIEW (YOUR DESIGN) ==================== -->
+    <div id="home-view" class="view-page home-view active">
+      <div class="launcher-topbar">
+        <span class="brand-chip">NK Notes</span>
+
+        <div class="pill-switcher">
+          <button type="button" class="switch-tab active" id="tab-all">All</button>
+          <button type="button" class="switch-tab" id="tab-categories">Categories</button>
+        </div>
+
+        <div class="top-right-group">
+          <button type="button" class="icon-btn" id="btn-open-notebooks" title="Notebooks & Locked">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </button>
+          <button type="button" class="icon-btn" id="btn-home-menu" title="Menu & Settings">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="19" r="1.9"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="widget-section-title">
+        <span id="home-section-label">All Notes Widgets</span>
+        <span id="home-notes-count">0 notes</span>
+      </div>
+
+      <div id="widgets-grid" class="widgets-grid"></div>
+
+      <!-- Bottom Dock -->
+      <div class="bottom-dock">
+        <div class="dock-search-box">
+          <svg width="18" height="18" fill="none" stroke="#a1a1aa" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="home-search-input" placeholder="Search notes, PDF, video...">
+        </div>
+        <button type="button" class="dock-add-btn" id="btn-fab-add" title="Create Note">+</button>
+      </div>
+    </div>
+
+    <!-- ==================== 2. NOTEBOOKS MANAGER PAGE (FROSTED WIDGET STYLE) ==================== -->
+    <div id="notebooks-view" class="view-page subpage-wrap">
+      <div class="subpage-topbar">
+        <div class="subpage-title">
+          <button type="button" class="icon-btn" id="btn-close-notebooks">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <span>Notebooks</span>
+        </div>
+        <button type="button" class="brand-chip" style="cursor:pointer;" id="btn-nb-new">+ New</button>
+      </div>
+
+      <div class="frosted-group">
+        <div class="frosted-row" id="nb-row-all">
+          <div class="f-row-left">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span>All notes</span>
+          </div>
+          <div class="f-row-right"><span id="nb-count-all">0</span><span>›</span></div>
+        </div>
+      </div>
+
+      <div class="widget-section-title"><span>My Notebooks & Vaults</span></div>
+      <div class="frosted-group" id="nb-list-group"></div>
+    </div>
+
+    <!-- ==================== 3. SETTINGS PAGE (FROSTED WIDGET STYLE) ==================== -->
+    <div id="settings-view" class="view-page subpage-wrap">
+      <div class="subpage-topbar">
+        <div class="subpage-title">
+          <button type="button" class="icon-btn" id="btn-close-settings">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </button>
+          <span>Settings</span>
+        </div>
+      </div>
+
+      <div class="frosted-group">
+        <div class="frosted-row" id="set-row-backup">
+          <div>
+            <div>Cloud sync & Backup for Notes</div>
+            <div class="f-row-sub">Export or restore all notes, videos & files</div>
+          </div>
+          <div class="f-row-right"><span>On</span><span>›</span></div>
+        </div>
+        <div class="frosted-row" id="set-row-notif">
+          <div>Manage notifications</div>
+          <div class="f-row-right"><span>›</span></div>
+        </div>
+      </div>
+
+      <div class="frosted-group">
+        <div class="frosted-row" style="cursor:default;">
+          <div style="padding-right:1rem;">
+            <div>Slash commands</div>
+            <div class="f-row-sub">Tap or enter "/" to insert checklist, doodle, spreadsheet, or media.</div>
+          </div>
+          <label class="gold-switch">
+            <input type="checkbox" id="toggle-slash-cmd" checked>
+            <span class="gold-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="frosted-group">
+        <div class="frosted-row" style="cursor:default;">
+          <div>
+            <div>Version number</div>
+            <div class="f-row-sub">16.7.5_NKNotes_Nitish</div>
+          </div>
+        </div>
+        <div class="frosted-row" id="set-row-about">
+          <div>About NK Notes</div>
+          <div class="f-row-right"><span>›</span></div>
+        </div>
+        <div class="frosted-row" id="set-row-feedback">
+          <div>Send Feedback</div>
+          <div class="f-row-right"><span>›</span></div>
+        </div>
+        <div class="frosted-row" id="set-row-privacy">
+          <div>Privacy</div>
+          <div class="f-row-right"><span>›</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 4. NOTE EDITOR VIEW ==================== -->
+    <div id="editor-view" class="view-page skin-black">
+      <div class="editor-topbar">
+        <button type="button" class="icon-btn" id="btn-editor-back" title="Back">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+
+        <div class="editor-top-actions">
+          <button type="button" class="icon-btn" id="btn-undo" title="Undo">
+            <svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
+          </button>
+          <button type="button" class="icon-btn" id="btn-redo" title="Redo">
+            <svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13"/></svg>
+          </button>
+          <button type="button" class="icon-btn" id="btn-editor-share-top" title="Share Note">
+            <svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </button>
+          <button type="button" class="icon-btn" id="btn-editor-menu" title="Options">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="19" r="1.9"/></svg>
+          </button>
+          <button type="button" class="done-btn" id="btn-editor-done">Done</button>
+        </div>
+      </div>
+
+      <div id="find-in-note-bar" class="find-in-note-bar">
+        <input type="text" id="find-note-input" placeholder="Find word in note...">
+        <span id="find-count" style="font-size:0.8rem; color:#f5b400;"></span>
+        <button type="button" class="icon-btn" id="btn-close-find">✕</button>
+      </div>
+
+      <div class="editor-meta-row">
+        <span id="editor-date">17/11/2026, 06:21</span>
+        <span>•</span>
+        <span id="editor-char-count">0 chars</span>
+        <span>•</span>
+        <button type="button" class="custom-cat-pill" id="btn-editor-category">
+          <span id="editor-cat-label">Personal</span>
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+      </div>
+
+      <div id="editor-reminder-badge" class="reminder-pill" style="display: none;"></div>
+
+      <input type="text" id="editor-title" class="editor-title-input" placeholder="Note Title">
+
+      <div id="blocks-container" class="blocks-container"></div>
+
+      <textarea id="editor-textarea" class="editor-textarea" placeholder="Write your note... (Type / for quick commands)"></textarea>
+
+      <!-- Slash Command Quick Menu -->
+      <div id="slash-popup" class="slash-popup">
+        <button type="button" class="menu-item" id="slash-todo"><span>Add Checklist</span></button>
+        <button type="button" class="menu-item" id="slash-sheet"><span>Insert Spreadsheet Table</span></button>
+        <button type="button" class="menu-item" id="slash-doodle"><span>Draw Doodle</span></button>
+        <button type="button" class="menu-item" id="slash-media"><span>Attach Photos / Videos / Files</span></button>
+      </div>
+
+      <!-- Bottom Floating Pill Toolbar -->
+      <div class="bottom-toolbar-wrap">
+        <div id="format-subbar" class="subbar-popup">
+          <button type="button" class="fmt-btn" id="fmt-bold">Bold</button>
+          <button type="button" class="fmt-btn" id="fmt-italic">Italic</button>
+          <button type="button" class="fmt-btn" id="fmt-large">Large Text</button>
+        </div>
+
+        <div class="bottom-pill-bar">
+          <button type="button" class="tool-icon-btn" id="btn-tool-checklist" title="Add Checklist">
+            <svg width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </button>
+
+          <button type="button" class="tool-icon-btn" id="btn-tool-format" title="Text Style" style="font-weight: 700; font-size: 1.05rem;">
+            Aa
+          </button>
+
+          <button type="button" class="tool-icon-btn" id="btn-tool-voice" title="Voice Typing">
+            <svg width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+          </button>
+
+          <button type="button" class="tool-icon-btn" id="btn-tool-add-sheet" title="Add Photos, Camera, Doodle, Spreadsheet, Files">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 5. FROSTED ADD BOTTOM SHEET (Photos, Camera, Doodle, Spreadsheet, Files, Video, Audio) ==================== -->
+  <div id="add-sheet-backdrop" class="sheet-backdrop">
+    <div class="frosted-add-sheet">
+      <div class="sheet-header">
+        <h3>Add</h3>
+        <button type="button" class="sheet-close-circle" id="btn-close-add-sheet">✕</button>
+      </div>
+
+      <div class="add-tiles-grid">
+        <label class="add-tile-item">
+          <div class="add-tile-box">
+            <svg width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+          </div>
+          <span>Photos</span>
+          <input type="file" id="inp-photo" accept="image/*">
+        </label>
+
+        <label class="add-tile-item">
+          <div class="add-tile-box">
+            <svg width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+          <span>Camera</span>
+          <input type="file" id="inp-camera" accept="image/*" capture="environment">
+        </label>
+
+        <button type="button" class="add-tile-item" id="btn-add-doodle">
+          <div class="add-tile-box">
+            <svg width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/></svg>
+          </div>
+          <span>Doodle</span>
+        </button>
+
+        <button type="button" class="add-tile-item" id="btn-add-spreadsheet">
+          <div class="add-tile-box">
+            <svg width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          </div>
+          <span>Spreadsheet</span>
+        </button>
+
+        <label class="add-tile-item">
+          <div class="add-tile-box">
+            <svg width="25" height="25" fill="currentColor" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+          </div>
+          <span>Files</span>
+          <input type="file" id="inp-doc" accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx,.zip,*/*">
+        </label>
+
+        <label class="add-tile-item">
+          <div class="add-tile-box">
+            <svg width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="15" height="14" rx="2.5"/><path d="m17 10 5-3v10l-5-3Z"/></svg>
+          </div>
+          <span>Video</span>
+          <input type="file" id="inp-video" accept="video/*">
+        </label>
+
+        <label class="add-tile-item">
+          <div class="add-tile-box">
+            <svg width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </div>
+          <span>Audio</span>
+          <input type="file" id="inp-audio" accept="audio/*">
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 6. FROSTED SHARE BOTTOM SHEET (Text, Image, Link, All Apps & Files) ==================== -->
+  <div id="share-sheet-backdrop" class="sheet-backdrop">
+    <div class="frosted-share-sheet">
+      <div class="share-sheet-title">Share note</div>
+      <button type="button" class="share-sheet-btn" id="btn-share-text">Share as text</button>
+      <button type="button" class="share-sheet-btn" id="btn-share-image">Share as image</button>
+      <button type="button" class="share-sheet-btn" id="btn-share-files">Share with attached files (All Apps)</button>
+      <button type="button" class="share-sheet-btn" id="btn-share-link">Share via link</button>
+      <button type="button" class="share-sheet-btn" id="btn-share-cancel">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ==================== 7. DROPDOWN MENUS ==================== -->
+  <div id="menu-overlay" class="menu-overlay"></div>
+
+  <div id="home-menu" class="dropdown-menu" style="display: none;">
+    <button type="button" class="menu-item" id="menu-new-category">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+      <span>Notebooks & Vaults</span>
+    </button>
+    <button type="button" class="menu-item" id="menu-trash-view">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      <span>Recently Deleted</span>
+    </button>
+    <div class="menu-divider"></div>
+    <button type="button" class="menu-item" id="menu-settings">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span>Settings</span>
+    </button>
+    <button type="button" class="menu-item" id="menu-feedback">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>Send Feedback</span>
+    </button>
+    <button type="button" class="menu-item" id="menu-about">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <span>About NK Notes</span>
+    </button>
+  </div>
+
+  <div id="editor-menu" class="dropdown-menu" style="display: none;">
+    <button type="button" class="menu-item" id="menu-find"><span>Find in Note</span></button>
+    <button type="button" class="menu-item" id="menu-pin"><span id="menu-pin-label">Pin Widget</span></button>
+    <button type="button" class="menu-item" id="menu-skins"><span>Skins</span></button>
+    <button type="button" class="menu-item" id="menu-reminder"><span>Set Reminder</span></button>
+    <button type="button" class="menu-item" id="menu-move"><span>Move Category</span></button>
+    <button type="button" class="menu-item" id="menu-lock"><span id="menu-lock-label">Lock Note</span></button>
+    <button type="button" class="menu-item" id="menu-share"><span>Share</span></button>
+    <div class="menu-divider"></div>
+    <button type="button" class="menu-item danger" id="menu-delete"><span>Delete</span></button>
+  </div>
+
+  <!-- ==================== 8. MODAL ==================== -->
+  <div id="modal-backdrop" class="modal-backdrop">
+    <div class="modal-card" id="modal-content"></div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    /* ==================== PWA SETUP ==================== */
+    (function setupPWA() {
+      const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5b400"/><stop offset="100%" stop-color="#ea580c"/></linearGradient></defs><rect width="512" height="512" rx="120" fill="url(#g)"/><text x="50%" y="56%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-weight="800" font-size="220" fill="#000000">NK</text></svg>`;
+      const iconUrl = 'data:image/svg+xml;base64,' + btoa(iconSvg);
+      document.getElementById('pwa-icon').href = iconUrl;
+      const manifest = {
+        name: 'NK Notes - Made by Nitish',
+        short_name: 'NK Notes',
+        start_url: location.href,
+        display: 'standalone',
+        background_color: '#09090d',
+        theme_color: '#09090d',
+        icons: [{ src: iconUrl, sizes: '512x512', type: 'image/svg+xml' }]
+      };
+      document.getElementById('pwa-manifest').href = URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: 'application/json' }));
+    })();
+
+    /* ==================== SPLASH SCREEN ==================== */
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('splash-screen').classList.add('hide');
+      }, 2000);
+    });
+
+    /* ==================== INDEXED-DB STORAGE ==================== */
+    const DB_NAME = 'NKNotesWidgetDB_v7';
+    const STORE_NAME = 'notesStore';
+    let idb = null;
+
+    function initDB() {
+      return new Promise(resolve => {
+        try {
+          const req = indexedDB.open(DB_NAME, 1);
+          req.onupgradeneeded = e => {
+            if (!e.target.result.objectStoreNames.contains(STORE_NAME)) e.target.result.createObjectStore(STORE_NAME);
+          };
+          req.onsuccess = e => { idb = e.target.result; resolve(true); };
+          req.onerror = () => resolve(false);
+        } catch { resolve(false); }
+      });
+    }
+
+    function dbPut(key, value) {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+      if (!idb) return;
+      try { idb.transaction(STORE_NAME, 'readwrite').objectStore(STORE_NAME).put(value, key); } catch {}
+    }
+
+    function dbGet(key) {
+      return new Promise(resolve => {
+        if (!idb) {
+          try { const r = localStorage.getItem(key); resolve(r ? JSON.parse(r) : null); } catch { resolve(null); }
+          return;
+        }
+        try {
+          const req = idb.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).get(key);
+          req.onsuccess = () => resolve(req.result !== undefined ? req.result : null);
+          req.onerror = () => resolve(null);
+        } catch { resolve(null); }
+      });
+    }
+
+    /* ==================== APP STATE ==================== */
+    let notes = [];
+    let categories = ['Personal', 'Work', 'Study', 'Media Vault'];
+    let settings = { slashCommands: true, sortMode: 'edited' };
+
+    let homeTab = 'all'; // 'all' | 'categories' | 'locked' | 'trash'
+    let selectedCategoryFilter = null;
+    let activeNoteId = null;
+    let undoStack = [];
+    let redoStack = [];
+    let shareTargetNote = null;
+
+    function getFormattedDate() {
+      const d = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(el._timer);
+      el._timer = setTimeout(() => el.classList.remove('show'), 2300);
+    }
+
+    function escapeHTML(str) {
+      return String(str || '').replace(/[&<>'"]/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      }[c]));
+    }
+
+    function saveState() {
+      dbPut('nk_v7_notes', notes);
+      dbPut('nk_v7_cats', categories);
+      dbPut('nk_v7_settings', settings);
+    }
+
+    function switchPage(pageId) {
+      document.querySelectorAll('.view-page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+    }
+
+    async function startApp() {
+      await initDB();
+      const sNotes = await dbGet('nk_v7_notes');
+      const sCats = await dbGet('nk_v7_cats');
+      const sSets = await dbGet('nk_v7_settings');
+
+      if (Array.isArray(sNotes)) notes = sNotes;
+      if (Array.isArray(sCats) && sCats.length > 0) categories = sCats;
+      if (sSets) settings = { ...settings, ...sSets };
+
+      document.getElementById('toggle-slash-cmd').checked = settings.slashCommands;
+
+      if (notes.length === 0) {
+        notes.push({
+          id: 'note_intro',
+          title: 'NK Notes Widget Workspace',
+          body: 'Made by Nitish. Tap + to create notes, draw Doodles, add Spreadsheets, Photos, Videos, Audio, PDFs, or share as text/image!',
+          todos: [{ text: 'Try Doodle, Spreadsheet & Share as Image', done: false }],
+          sheets: [],
+          attachments: [],
+          notebook: 'Personal',
+          pinned: true,
+          locked: false,
+          pinCode: '',
+          skin: 'skin-black',
+          style: { bold: false, italic: false, large: false },
+          reminder: '',
+          deleted: false,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          dateStr: getFormattedDate()
+        });
+        saveState();
+      }
+      renderHome();
+    }
+
+    /* ==================== 1. RENDER FROSTED WIDGET HOME ==================== */
+    function renderHome() {
+      const grid = document.getElementById('widgets-grid');
+      const query = document.getElementById('home-search-input').value.toLowerCase().trim();
+      const labelEl = document.getElementById('home-section-label');
+      const countEl = document.getElementById('home-notes-count');
+
+      document.getElementById('tab-all').classList.toggle('active', homeTab === 'all');
+      document.getElementById('tab-categories').classList.toggle('active', homeTab === 'categories');
+
+      grid.innerHTML = '';
+
+      // Category Folder Widgets View
+      if (homeTab === 'categories' && !selectedCategoryFilter && !query) {
+        labelEl.textContent = 'Category Widgets';
+        countEl.textContent = `${categories.length} folders`;
+
+        categories.forEach(cat => {
+          const catNotes = notes.filter(n => !n.deleted && n.notebook === cat);
+          const photoCount = catNotes.reduce((acc, n) => acc + (n.attachments || []).filter(a => a.kind === 'photo' || a.kind === 'doodle').length, 0);
+          const videoCount = catNotes.reduce((acc, n) => acc + (n.attachments || []).filter(a => a.kind === 'video').length, 0);
+          const fileCount = catNotes.reduce((acc, n) => acc + (n.attachments || []).filter(a => a.kind === 'doc' || a.kind === 'audio').length + (n.sheets || []).length, 0);
+
+          const card = document.createElement('div');
+          card.className = 'widget-card';
+          card.innerHTML = `
+            <div>
+              <div class="widget-top-row">
+                <span class="widget-pill-tag">${catNotes.length} Notes</span>
+              </div>
+              <div class="widget-title">${escapeHTML(cat)}</div>
+              <div class="widget-media-strip">
+                <div class="w-app-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></div>
+                <div class="w-app-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="15" height="16" rx="2.5"/><path d="m17 10 5-3v10l-5-3Z"/></svg></div>
+                <div class="w-app-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="3" x2="9" y2="21"/></svg></div>
+                <div class="w-app-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg></div>
+              </div>
+            </div>
+            <div class="widget-footer">
+              <span>${photoCount} Img • ${videoCount} Vid • ${fileCount} Files</span>
+              <span>Open →</span>
+            </div>
+          `;
+          card.onclick = () => { selectedCategoryFilter = cat; renderHome(); };
+          grid.appendChild(card);
+        });
+        return;
+      }
+
+      // Notes Widget Cards View
+      let list = notes.filter(n => {
+        if (homeTab === 'trash') return n.deleted;
+        if (n.deleted) return false;
+        if (homeTab === 'locked') return n.locked;
+        if (homeTab === 'categories' && selectedCategoryFilter && n.notebook !== selectedCategoryFilter) return false;
+
+        const todoStr = (n.todos || []).map(t => t.text).join(' ').toLowerCase();
+        const attStr = (n.attachments || []).map(a => a.name).join(' ').toLowerCase();
+        return (n.title || '').toLowerCase().includes(query) ||
+               (n.body || '').toLowerCase().includes(query) ||
+               todoStr.includes(query) || attStr.includes(query);
+      });
+
+      list.sort((a, b) => {
+        if (homeTab !== 'trash' && b.pinned !== a.pinned) return Number(b.pinned) - Number(a.pinned);
+        return settings.sortMode === 'created' ? b.createdAt - a.createdAt : b.updatedAt - a.updatedAt;
+      });
+
+      if (homeTab === 'trash') {
+        labelEl.innerHTML = `Recently Deleted <button type="button" style="background:none;border:none;color:#f5b400;font-weight:600;cursor:pointer;" id="btn-back-all">← Back</button>`;
+        document.getElementById('btn-back-all').onclick = () => { homeTab = 'all'; renderHome(); };
+      } else if (homeTab === 'locked') {
+        labelEl.innerHTML = `Locked Notes <button type="button" style="background:none;border:none;color:#f5b400;font-weight:600;cursor:pointer;" id="btn-back-all2">← Back</button>`;
+        document.getElementById('btn-back-all2').onclick = () => { homeTab = 'all'; renderHome(); };
+      } else if (homeTab === 'categories' && selectedCategoryFilter) {
+        labelEl.innerHTML = `${escapeHTML(selectedCategoryFilter)} <button type="button" style="background:none;border:none;color:#f5b400;font-weight:600;cursor:pointer;" id="btn-back-cats">← All Categories</button>`;
+        document.getElementById('btn-back-cats').onclick = () => { selectedCategoryFilter = null; renderHome(); };
+      } else {
+        labelEl.textContent = 'Pinned & Recent Widgets';
+      }
+
+      countEl.textContent = `${list.length} note${list.length === 1 ? '' : 's'}`;
+
+      if (list.length === 0) {
+        grid.innerHTML = `<div style="grid-column: span 2; text-align:center; color:#a1a1aa; padding:4rem 1rem;">No notes here. Tap + to create a widget note.</div>`;
+        return;
+      }
+
+      list.forEach(note => {
+        const card = document.createElement('div');
+        card.className = `widget-card ${note.pinned ? 'wide-span' : ''}`;
+
+        const atts = note.attachments || [];
+        const photos = !note.locked ? atts.filter(a => a.kind === 'photo' || a.kind === 'doodle') : [];
+        const previewText = note.locked
+          ? 'Locked with 4-digit PIN'
+          : (note.body.trim() || ((note.todos && note.todos[0]) ? `☑ ${note.todos[0].text}` : 'Tap to open note...'));
+
+        let mediaBadges = '';
+        if (!note.locked && (atts.length > 0 || (note.sheets && note.sheets.length > 0))) {
+          const vCount = atts.filter(a => a.kind === 'video').length;
+          const aCount = atts.filter(a => a.kind === 'audio').length;
+          const dCount = atts.filter(a => a.kind === 'doc').length;
+          const sCount = (note.sheets || []).length;
+
+          mediaBadges = `<div class="widget-media-strip">
+            ${photos.slice(0, 3).map(p => `<img src="${p.data}" class="w-mini-thumb">`).join('')}
+            ${vCount ? `<span class="widget-pill-tag">${vCount} Video</span>` : ''}
+            ${aCount ? `<span class="widget-pill-tag">${aCount} Audio</span>` : ''}
+            ${dCount ? `<span class="widget-pill-tag">${dCount} File</span>` : ''}
+            ${sCount ? `<span class="widget-pill-tag">${sCount} Sheet</span>` : ''}
+          </div>`;
+        }
+
+        card.innerHTML = `
+          <div>
+            <div class="widget-top-row">
+              <span class="widget-pill-tag">${escapeHTML(note.notebook)}</span>
+              <div class="card-quick-actions">
+                ${note.pinned ? `<span class="mini-circle-btn pinned" title="Pinned"><svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M16 3H8v2h1v6l-2 2v2h4v6l1 1 1-1v-6h4v-2l-2-2V5h1V3z"/></svg></span>` : ''}
+                ${!note.deleted ? `<button type="button" class="mini-circle-btn" data-share-card="${note.id}" title="Share Note"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>` : ''}
+              </div>
+            </div>
+            <div class="widget-title">${escapeHTML(note.title.trim() || 'Untitled Note')}</div>
+            <div class="widget-preview">${escapeHTML(previewText)}</div>
+            ${mediaBadges}
+          </div>
+          <div class="widget-footer">
+            <span>${(note.dateStr || '').split(',')[0]}</span>
+            <span>${note.locked ? 'Locked' : 'Open'}</span>
+          </div>
+        `;
+
+        const quickShareBtn = card.querySelector('[data-share-card]');
+        if (quickShareBtn) {
+          quickShareBtn.onclick = e => {
+            e.stopPropagation();
+            if (note.locked) { showToast('Unlock note first'); return; }
+            shareTargetNote = note;
+            document.getElementById('share-sheet-backdrop').classList.add('active');
+          };
+        }
+
+        card.onclick = () => {
+          if (note.deleted) openTrashModal(note);
+          else if (note.locked) openUnlockModal(note);
+          else openEditor(note.id);
+        };
+        grid.appendChild(card);
+      });
+    }
+
+    /* ==================== 2. NOTEBOOKS MANAGER PAGE ==================== */
+    function openNotebooksPage() {
+      closeMenus();
+      switchPage('notebooks-view');
+      const activeTotal = notes.filter(n => !n.deleted).length;
+      const lockedTotal = notes.filter(n => !n.deleted && n.locked).length;
+      const trashTotal = notes.filter(n => n.deleted).length;
+
+      document.getElementById('nb-count-all').textContent = activeTotal;
+      document.getElementById('nb-row-all').onclick = () => {
+        homeTab = 'all';
+        selectedCategoryFilter = null;
+        switchPage('home-view');
+        renderHome();
+      };
+
+      const group = document.getElementById('nb-list-group');
+      group.innerHTML = '';
+
+      categories.forEach(cat => {
+        const count = notes.filter(n => !n.deleted && n.notebook === cat).length;
+        const row = document.createElement('div');
+        row.className = 'frosted-row';
+        row.innerHTML = `
+          <div class="f-row-left">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span>${escapeHTML(cat)}</span>
+          </div>
+          <div class="f-row-right"><span>${count}</span><span>›</span></div>
+        `;
+        row.onclick = () => {
+          homeTab = 'categories';
+          selectedCategoryFilter = cat;
+          switchPage('home-view');
+          renderHome();
+        };
+        group.appendChild(row);
+      });
+
+      // Locked Notes Row
+      const lockRow = document.createElement('div');
+      lockRow.className = 'frosted-row';
+      lockRow.innerHTML = `
+        <div class="f-row-left">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>Locked notes</span>
+        </div>
+        <div class="f-row-right"><span>${lockedTotal}</span><span>›</span></div>
+      `;
+      lockRow.onclick = () => {
+        homeTab = 'locked';
+        switchPage('home-view');
+        renderHome();
+      };
+      group.appendChild(lockRow);
+
+      // Recently Deleted Row
+      const trashRow = document.createElement('div');
+      trashRow.className = 'frosted-row';
+      trashRow.innerHTML = `
+        <div class="f-row-left">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          <span>Recently deleted</span>
+        </div>
+        <div class="f-row-right"><span>${trashTotal}</span><span>›</span></div>
+      `;
+      trashRow.onclick = () => {
+        homeTab = 'trash';
+        switchPage('home-view');
+        renderHome();
+      };
+      group.appendChild(trashRow);
+    }
+
+    /* ==================== 3. EDITOR & BLOCKS (Doodle, Spreadsheet, Media, Checklist) ==================== */
+    function createNewNote() {
+      const now = Date.now();
+      const targetCat = (homeTab === 'categories' && selectedCategoryFilter) ? selectedCategoryFilter : categories[0];
+      const newNote = {
+        id: 'note_' + now,
+        title: '',
+        body: '',
+        todos: [],
+        sheets: [],
+        attachments: [],
+        notebook: targetCat,
+        pinned: false,
+        locked: false,
+        pinCode: '',
+        skin: 'skin-black',
+        style: { bold: false, italic: false, large: false },
+        reminder: '',
+        deleted: false,
+        createdAt: now,
+        updatedAt: now,
+        dateStr: getFormattedDate()
+      };
+      notes.unshift(newNote);
+      saveState();
+      openEditor(newNote.id);
+    }
+
+    function openEditor(id) {
+      const note = notes.find(n => n.id === id);
+      if (!note) return;
+
+      activeNoteId = id;
+      undoStack = [note.body || ''];
+      redoStack = [];
+
+      switchPage('editor-view');
+      const editor = document.getElementById('editor-view');
+      editor.className = `view-page active ${note.skin || 'skin-black'}`;
+
+      document.getElementById('editor-cat-label').textContent = note.notebook || categories[0];
+      document.getElementById('editor-date').textContent = note.dateStr;
+      document.getElementById('editor-title').value = note.title || '';
+      document.getElementById('editor-textarea').value = note.body || '';
+
+      applyTextStyles(note.style || { bold: false, italic: false, large: false });
+      renderBlocks(note);
+      updateReminderBadge(note);
+      updateCharCount();
+    }
+
+    function saveCurrentNote(recordHistory = false) {
+      if (!activeNoteId) return;
+      const note = notes.find(n => n.id === activeNoteId);
+      if (!note) return;
+
+      const txt = document.getElementById('editor-textarea').value;
+      if (recordHistory && undoStack[undoStack.length - 1] !== txt) {
+        undoStack.push(txt);
+        if (undoStack.length > 30) undoStack.shift();
+        redoStack = [];
+      }
+
+      note.title = document.getElementById('editor-title').value;
+      note.body = txt;
+      note.updatedAt = Date.now();
+      note.dateStr = getFormattedDate();
+
+      document.getElementById('editor-date').textContent = note.dateStr;
+      updateCharCount();
+      saveState();
+    }
+
+    function updateCharCount() {
+      const len = document.getElementById('editor-textarea').value.length;
+      document.getElementById('editor-char-count').textContent = `${len} chars`;
+    }
+
+    function closeEditor() {
+      if (activeNoteId) {
+        const note = notes.find(n => n.id === activeNoteId);
+        if (note) {
+          const empty = !note.title.trim() && !note.body.trim() && (!note.todos || !note.todos.length) && (!note.attachments || !note.attachments.length) && (!note.sheets || !note.sheets.length);
+          if (empty) {
+            notes = notes.filter(n => n.id !== activeNoteId);
+            saveState();
+          }
+        }
+      }
+      activeNoteId = null;
+      stopVoice();
+      document.getElementById('find-in-note-bar').classList.remove('active');
+      document.getElementById('format-subbar').classList.remove('active');
+      document.getElementById('slash-popup').classList.remove('active');
+      switchPage('home-view');
+      renderHome();
+    }
+
+    function renderBlocks(note) {
+      const container = document.getElementById('blocks-container');
+      container.innerHTML = '';
+
+      // 1. Checklists
+      (note.todos || []).forEach((item, idx) => {
+        const row = document.createElement('div');
+        row.className = 'todo-item';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = item.done;
+        cb.onchange = () => {
+          note.todos[idx].done = cb.checked;
+          txt.classList.toggle('done', cb.checked);
+          saveState();
+        };
+        const txt = document.createElement('input');
+        txt.type = 'text';
+        txt.value = item.text;
+        txt.placeholder = 'To-do item...';
+        if (item.done) txt.classList.add('done');
+        txt.oninput = () => { note.todos[idx].text = txt.value; saveState(); };
+
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.style.cssText = 'background:none;border:none;color:#a1a1aa;font-size:1.15rem;cursor:pointer;';
+        del.textContent = '×';
+        del.onclick = () => { note.todos.splice(idx, 1); saveState(); renderBlocks(note); };
+
+        row.append(cb, txt, del);
+        container.appendChild(row);
+      });
+
+      // 2. Spreadsheets
+      (note.sheets || []).forEach((sheet, sIdx) => {
+        const card = document.createElement('div');
+        card.className = 'sheet-card';
+        const head = document.createElement('div');
+        head.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;';
+        head.innerHTML = `<span style="font-size:0.8rem;color:#f5b400;font-weight:700;">Spreadsheet</span>
+          <div style="display:flex;gap:0.4rem;">
+            <button type="button" class="doc-btn" data-add-row>+ Row</button>
+            <button type="button" class="att-remove-btn" data-del-sheet>Remove</button>
+          </div>`;
+        head.querySelector('[data-add-row]').onclick = () => { sheet.rows.push(['', '', '']); saveState(); renderBlocks(note); };
+        head.querySelector('[data-del-sheet]').onclick = () => { note.sheets.splice(sIdx, 1); saveState(); renderBlocks(note); };
+        card.appendChild(head);
+
+        const tbl = document.createElement('table');
+        tbl.className = 'sheet-table';
+        sheet.rows.forEach((r, rIdx) => {
+          const tr = document.createElement('tr');
+          r.forEach((val, cIdx) => {
+            const td = document.createElement('td');
+            const inp = document.createElement('input');
+            inp.value = val;
+            inp.placeholder = rIdx === 0 ? `Header ${cIdx + 1}` : '...';
+            inp.oninput = () => { sheet.rows[rIdx][cIdx] = inp.value; saveState(); };
+            td.appendChild(inp);
+            tr.appendChild(td);
+          });
+          tbl.appendChild(tr);
+        });
+        card.appendChild(tbl);
+        container.appendChild(card);
+      });
+
+      // 3. Attachments (Photos, Camera, Doodle, Videos, Audio, Files)
+      (note.attachments || []).forEach((att, idx) => {
+        const card = document.createElement('div');
+        card.className = 'att-card';
+
+        const header = document.createElement('div');
+        header.className = 'att-header';
+        header.innerHTML = `<span class="att-name">${escapeHTML(att.name)}</span>`;
+
+        const btns = document.createElement('div');
+        btns.style.cssText = 'display:flex;gap:0.4rem;';
+
+        const shBtn = document.createElement('button');
+        shBtn.type = 'button';
+        shBtn.className = 'att-share-btn';
+        shBtn.textContent = 'Share';
+        shBtn.onclick = () => shareFilesToSystemApps(note, att);
+
+        const remBtn = document.createElement('button');
+        remBtn.type = 'button';
+        remBtn.className = 'att-remove-btn';
+        remBtn.textContent = 'Remove';
+        remBtn.onclick = () => { note.attachments.splice(idx, 1); saveState(); renderBlocks(note); };
+
+        btns.append(shBtn, remBtn);
+        header.appendChild(btns);
+        card.appendChild(header);
+
+        if (att.kind === 'photo' || att.kind === 'doodle') {
+          const img = document.createElement('img');
+          img.src = att.data;
+          card.appendChild(img);
+        } else if (att.kind === 'video') {
+          const vid = document.createElement('video');
+          vid.src = att.data;
+          vid.controls = true;
+          vid.playsInline = true;
+          card.appendChild(vid);
+        } else if (att.kind === 'audio') {
+          const aud = document.createElement('audio');
+          aud.src = att.data;
+          aud.controls = true;
+          card.appendChild(aud);
+        } else {
+          const ext = (att.name.split('.').pop() || 'FILE').toUpperCase();
+          const box = document.createElement('div');
+          box.className = 'doc-box';
+          box.innerHTML = `
+            <div style="display:flex;align-items:center;gap:0.65rem;min-width:0;">
+              <div class="doc-icon">${escapeHTML(ext)}</div>
+              <div style="min-width:0;">
+                <div style="font-size:0.88rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHTML(att.name)}</div>
+                <div style="font-size:0.75rem;color:#a1a1aa;">${att.size || ''}</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:0.4rem;">
+              <button type="button" class="doc-btn primary" data-btn="open">Open</button>
+              <button type="button" class="doc-btn" data-btn="save">Save</button>
+            </div>
+          `;
+          box.querySelector('[data-btn="open"]').onclick = () => {
+            if (att.mime === 'application/pdf' || att.name.toLowerCase().endsWith('.pdf')) {
+              openModal(`<h3>${escapeHTML(att.name)}</h3>
+                <iframe src="${att.data}" style="width:100%;height:360px;border:none;border-radius:12px;background:#fff;"></iframe>
+                <div class="modal-btns"><button type="button" class="modal-btn cancel" onclick="closeModal()">Close</button></div>`);
+            } else {
+              const a = document.createElement('a');
+              a.href = att.data;
+              a.download = att.name;
+              a.click();
+            }
+          };
+          box.querySelector('[data-btn="save"]').onclick = () => {
+            const a = document.createElement('a');
+            a.href = att.data;
+            a.download = att.name;
+            a.click();
+          };
+          card.appendChild(box);
+        }
+        container.appendChild(card);
+      });
+    }
+
+    /* ==================== ADD SHEET ACTIONS ==================== */
+    function processSelectedFile(inputEl, kind) {
+      const file = inputEl.files && inputEl.files[0];
+      if (!file) return;
+      const note = notes.find(n => n.id === activeNoteId);
+      if (!note) return;
+
+      document.getElementById('add-sheet-backdrop').classList.remove('active');
+      showToast(`Attaching ${file.name}...`);
+
+      const reader = new FileReader();
+      reader.onload = ev => {
+        if (!note.attachments) note.attachments = [];
+        note.attachments.push({
+          id: 'att_' + Date.now(),
+          kind,
+          name: file.name,
+          mime: file.type || 'application/octet-stream',
+          size: (file.size / 1024).toFixed(1) + ' KB',
+          data: ev.target.result
+        });
+        saveState();
+        renderBlocks(note);
+        showToast(`${file.name} saved!`);
+      };
+      reader.readAsDataURL(file);
+      inputEl.value = '';
+    }
+
+    function openDoodlePad() {
+      document.getElementById('add-sheet-backdrop').classList.remove('active');
+      openModal(`
+        <h3>Doodle Drawing Pad</h3>
+        <canvas id="doodle-canvas" width="330" height="240" style="width:100%;height:240px;background:#09090d;border:1px solid #35353b;border-radius:16px;touch-action:none;"></canvas>
+        <div class="modal-btns" style="justify-content:space-between;">
+          <button type="button" class="modal-btn cancel" id="doodle-clear">Clear</button>
+          <div style="display:flex;gap:0.5rem;">
+            <button type="button" class="modal-btn cancel" onclick="closeModal()">Cancel</button>
+            <button type="button" class="modal-btn confirm" id="doodle-save">Save Doodle</button>
+          </div>
+        </div>
+      `);
+
+      const canvas = document.getElementById('doodle-canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.strokeStyle = '#f5b400';
+      ctx.lineWidth = 3.5;
+      ctx.lineCap = 'round';
+      let drawing = false;
+
+      const getPos = e => {
+        const rect = canvas.getBoundingClientRect();
+        const cx = e.touches ? e.touches[0].clientX : e.clientX;
+        const cy = e.touches ? e.touches[0].clientY : e.clientY;
+        return { x: (cx - rect.left) * (canvas.width / rect.width), y: (cy - rect.top) * (canvas.height / rect.height) };
+      };
+
+      const start = e => { drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); };
+      const move = e => { if (!drawing) return; e.preventDefault(); const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); };
+      const end = () => { drawing = false; };
+
+      canvas.addEventListener('mousedown', start);
+      canvas.addEventListener('mousemove', move);
+      window.addEventListener('mouseup', end);
+      canvas.addEventListener('touchstart', start, { passive: false });
+      canvas.addEventListener('touchmove', move, { passive: false });
+      canvas.addEventListener('touchend', end);
+
+      document.getElementById('doodle-clear').onclick = () => ctx.clearRect(0, 0, canvas.width, canvas.height);
+      document.getElementById('doodle-save').onclick = () => {
+        const note = notes.find(n => n.id === activeNoteId);
+        if (note) {
+          if (!note.attachments) note.attachments = [];
+          note.attachments.push({
+            id: 'doodle_' + Date.now(),
+            kind: 'doodle',
+            name: 'Doodle_' + new Date().toLocaleTimeString() + '.png',
+            mime: 'image/png',
+            size: 'Drawing',
+            data: canvas.toDataURL('image/png')
+          });
+          saveState();
+          renderBlocks(note);
+        }
+        closeModal();
+        showToast('Doodle saved');
+      };
+    }
+
+    function insertSpreadsheet() {
+      document.getElementById('add-sheet-backdrop').classList.remove('active');
+      const note = notes.find(n => n.id === activeNoteId);
+      if (!note) return;
+      if (!note.sheets) note.sheets = [];
+      note.sheets.push({ rows: [['Item', 'Details', 'Value'], ['', '', ''], ['', '', '']] });
+      saveState();
+      renderBlocks(note);
+      showToast('Spreadsheet inserted');
+    }
+
+    /* ==================== SHARE SHEET ACTIONS (Text, Image Card, Link, All Apps & Files) ==================== */
+    function dataURLtoFile(dataUrl, filename, mime) {
+      const arr = dataUrl.split(',');
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8 = new Uint8Array(n);
+      while (n--) u8[n] = bstr.charCodeAt(n);
+      return new File([u8], filename, { type: mime || 'application/octet-stream' });
+    }
+
+    async function shareFilesToSystemApps(note, singleAtt = null) {
+      const title = (note.title || 'NK Note').trim();
+      const fullText = `${title}\n\n${note.body}\n\n— Shared via NK Notes (Made by Nitish)`.trim();
+      const targetAtts = singleAtt ? [singleAtt] : (note.attachments || []);
+      const files = [];
+      for (const att of targetAtts) {
+        try { files.push(dataURLtoFile(att.data, att.name, att.mime)); } catch {}
+      }
+      if (navigator.share) {
+        try {
+          if (files.length && navigator.canShare && navigator.canShare({ files })) {
+            await navigator.share({ title, text: fullText, files });
+          } else {
+            await navigator.share({ title, text: fullText });
+          }
+          return;
+        } catch (e) { if (e && e.name === 'AbortError') return; }
+      }
+      if (navigator.clipboard) { navigator.clipboard.writeText(fullText); showToast('Copied to clipboard'); }
+    }
+
+    function createNoteImageCard(note) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 800;
+      canvas.height = 600;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = '#09090d';
+      ctx.fillRect(0, 0, 800, 600);
+      ctx.strokeStyle = '#f5b400';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(24, 24, 752, 552);
+
+      ctx.fillStyle = '#f5b400';
+      ctx.font = 'bold 22px sans-serif';
+      ctx.fillText('NK NOTES • MADE BY NITISH', 55, 75);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 34px sans-serif';
+      ctx.fillText((note.title || 'Untitled Note').slice(0, 34), 55, 135);
+
+      ctx.fillStyle = '#d4d4d8';
+      ctx.font = '24px sans-serif';
+      const words = (note.body || 'Shared via NK Notes').split(/\s+/);
+      let line = '', y = 195;
+      for (const w of words) {
+        if ((line + w).length > 46) {
+          ctx.fillText(line, 55, y);
+          line = w + ' ';
+          y += 38;
+          if (y > 500) break;
+        } else { line += w + ' '; }
+      }
+      if (y <= 500) ctx.fillText(line, 55, y);
+
+      ctx.fillStyle = '#a1a1aa';
+      ctx.font = '18px sans-serif';
+      ctx.fillText(note.dateStr || '', 55, 545);
+      return canvas.toDataURL('image/png');
+    }
+
+    /* ==================== EVENT BINDINGS ==================== */
+    document.getElementById('tab-all').onclick = () => { homeTab = 'all'; selectedCategoryFilter = null; renderHome(); };
+    document.getElementById('tab-categories').onclick = () => { homeTab = 'categories'; selectedCategoryFilter = null; renderHome(); };
+    document.getElementById('home-search-input').oninput = renderHome;
+    document.getElementById('btn-fab-add').onclick = createNewNote;
+
+    document.getElementById('btn-open-notebooks').onclick = openNotebooksPage;
+    document.getElementById('btn-close-notebooks').onclick = () => { switchPage('home-view'); renderHome(); };
+    document.getElementById('btn-nb-new').onclick = () => {
+      openModal(`<h3>New Notebook</h3>
+        <input type="text" id="inp-nb-new" class="modal-input" placeholder="e.g. YouTube Scripts">
+        <div class="modal-btns">
+          <button type="button" class="modal-btn cancel" onclick="closeModal()">Cancel</button>
+          <button type="button" class="modal-btn confirm" id="btn-nb-save">Create</button>
+        </div>`);
+      document.getElementById('btn-nb-save').onclick = () => {
+        const val = document.getElementById('inp-nb-new').value.trim();
+        if (val && !categories.includes(val)) {
+          categories.push(val);
+          saveState();
+          openNotebooksPage();
+          showToast('Notebook created');
+        }
+        closeModal();
+      };
+    };
+
+    // Home Menu
+    document.getElementById('btn-home-menu').onclick = () => {
+      document.getElementById('menu-overlay').classList.add('active');
+      document.getElementById('home-menu').style.display = 'flex';
+    };
+    function closeMenus() {
+      document.getElementById('menu-overlay').classList.remove('active');
+      document.getElementById('home-menu').style.display = 'none';
+      document.getElementById('editor-menu').style.display = 'none';
+    }
+    document.getElementById('menu-overlay').onclick = closeMenus;
+
+    document.getElementById('menu-new-category').onclick = openNotebooksPage;
+    document.getElementById('menu-trash-view').onclick = () => { closeMenus(); homeTab = 'trash'; renderHome(); };
+    document.getElementById('menu-settings').onclick = () => { closeMenus(); switchPage('settings-view'); };
+    document.getElementById('btn-close-settings').onclick = () => { switchPage('home-view'); renderHome(); };
+
+    // Settings Actions
+    document.getElementById('toggle-slash-cmd').onchange = e => {
+      settings.slashCommands = e.target.checked;
+      saveState();
+      showToast(settings.slashCommands ? 'Slash commands On' : 'Slash commands Off');
+    };
+    document.getElementById('set-row-backup').onclick = () => {
+      openModal(`<h3>Cloud Sync & Backup</h3>
+        <p style="color:#a1a1aa;font-size:0.86rem;margin-bottom:1rem;">Download backup file or restore all notes, doodles, spreadsheets, and videos.</p>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;">
+          <button type="button" class="modal-btn confirm" id="btn-dl-bk">Download Backup (.json)</button>
+          <label class="modal-btn cancel" style="text-align:center;cursor:pointer;">Restore Backup File
+            <input type="file" id="inp-ul-bk" accept=".json" style="display:none;">
+          </label>
+        </div>
+        <div class="modal-btns"><button type="button" class="modal-btn cancel" onclick="closeModal()">Close</button></div>`);
+      document.getElementById('btn-dl-bk').onclick = () => {
+        const str = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify({ notes, categories, settings }));
+        const a = document.createElement('a');
+        a.href = str;
+        a.download = 'NK_Notes_Backup.json';
+        a.click();
+        showToast('Backup downloaded');
+      };
+      document.getElementById('inp-ul-bk').onchange = e => {
+        const f = e.target.files[0];
+        if (!f) return;
+        const r = new FileReader();
+        r.onload = ev => {
+          try {
+            const d = JSON.parse(ev.target.result);
+            if (d.notes) notes = d.notes;
+            if (d.categories) categories = d.categories;
+            saveState();
+            closeModal();
+            showToast('Backup restored!');
+          } catch { showToast('Invalid file'); }
+        };
+        r.readAsText(f);
+      };
+    };
+    document.getElementById('set-row-notif').onclick = () => showToast('Reminder notifications enabled');
+
+    function openAboutModal() {
+      closeMenus();
+      openModal(`<div style="text-align:center;padding:0.4rem 0;">
+        <div class="splash-logo" style="margin:0 auto 0.85rem;width:64px;height:64px;font-size:1.6rem;">NK</div>
+        <h3>NK Notes</h3>
+        <p style="color:#f5b400;font-weight:700;margin-bottom:0.6rem;">Made by Nitish</p>
+        <p style="color:#a1a1aa;font-size:0.84rem;line-height:1.5;">Wide Frosted-Glass Widget Workspace with Photos, Camera, Doodle, Spreadsheet, Videos, Audio, PDFs & Universal Sharing.</p>
+      </div><div class="modal-btns"><button type="button" class="modal-btn confirm" style="width:100%;" onclick="closeModal()">OK</button></div>`);
+    }
+    function openFeedbackModal() {
+      closeMenus();
+      let stars = 5;
+      openModal(`<h3>Send Feedback</h3>
+        <div class="star-row" id="fb-stars">
+          <button type="button" class="star-btn active" data-s="1">★</button>
+          <button type="button" class="star-btn active" data-s="2">★</button>
+          <button type="button" class="star-btn active" data-s="3">★</button>
+          <button type="button" class="star-btn active" data-s="4">★</button>
+          <button type="button" class="star-btn active" data-s="5">★</button>
+        </div>
+        <textarea id="fb-msg" class="modal-textarea" rows="3" placeholder="Write something ..."></textarea>
+        <div class="modal-btns">
+          <button type="button" class="modal-btn cancel" onclick="closeModal()">Cancel</button>
+          <button type="button" class="modal-btn confirm" id="fb-send">Submit</button>
+        </div>`);
+      document.querySelectorAll('#fb-stars .star-btn').forEach(b => {
+        b.onclick = () => {
+          stars = Number(b.getAttribute('data-s'));
+          document.querySelectorAll('#fb-stars .star-btn').forEach(x => x.classList.toggle('active', Number(x.getAttribute('data-s')) <= stars));
+        };
+      });
+      document.getElementById('fb-send').onclick = () => {
+        if (!document.getElementById('fb-msg').value.trim()) { showToast('Please write feedback'); return; }
+        closeModal();
+        showToast('Thank you! Feedback submitted to Nitish');
+      };
+    }
+
+    document.getElementById('menu-about').onclick = openAboutModal;
+    document.getElementById('set-row-about').onclick = openAboutModal;
+    document.getElementById('menu-feedback').onclick = openFeedbackModal;
+    document.getElementById('set-row-feedback').onclick = openFeedbackModal;
+    document.getElementById('set-row-privacy').onclick = () => {
+      openModal(`<h3>Privacy</h3>
+        <p style="color:#a1a1aa;font-size:0.86rem;line-height:1.5;">All your notes, doodles, spreadsheets, photos, videos, and files stay 100% private on your own device.</p>
+        <div class="modal-btns"><button type="button" class="modal-btn confirm" onclick="closeModal()">OK</button></div>`);
+    };
+
+    // Editor Controls
+    document.getElementById('btn-editor-back').onclick = closeEditor;
+    document.getElementById('btn-editor-done').onclick = closeEditor;
+    document.getElementById('btn-undo').onclick = () => {
+      if (undoStack.length <= 1) return;
+      redoStack.push(undoStack.pop());
+      document.getElementById('editor-textarea').value = undoStack[undoStack.length - 1];
+      saveCurrentNote(false);
+    };
+    document.getElementById('btn-redo').onclick = () => {
+      if (!redoStack.length) return;
+      const nxt = redoStack.pop();
+      undoStack.push(nxt);
+      document.getElementById('editor-textarea').value = nxt;
+      saveCurrentNote(false);
+    };
+    document.getElementById('editor-title').oninput = () => saveCurrentNote(false);
+    document.getElementById('editor-textarea').oninput = e => {
+      saveCurrentNote(true);
+      if (settings.slashCommands && e.target.value.endsWith('/')) document.getElementById('slash-popup').classList.add('active');
+      else document.getElementById('slash-popup').classList.remove('active');
+    };
+
+    // Slash Command Actions
+    const consumeSlash = () => {
+      const ta = document.getElementById('ed-textarea') || document.getElementById('editor-textarea');
+      if (ta.value.endsWith('/')) ta.value = ta.value.slice(0, -1);
+      document.getElementById('slash-popup').classList.remove('active');
+      saveCurrentNote(false);
+    };
+    document.getElementById('slash-todo').onclick = () => { consumeSlash(); document.getElementById('btn-tool-checklist').click(); };
+    document.getElementById('slash-sheet').onclick = () => { consumeSlash(); insertSpreadsheet(); };
+    document.getElementById('slash-doodle').onclick = () => { consumeSlash(); openDoodlePad(); };
+    document.getElementById('slash-media').onclick = () => { consumeSlash(); document.getElementById('add-sheet-backdrop').classList.add('active'); };
+
+    // Bottom Pill Toolbar
+    document.getElementById('btn-tool-checklist').onclick = () => {
+      const note = notes.find(n => n.id === activeNoteId);
+      if (!note) return;
+      if (!note.todos) note.todos = [];
+      note.todos.push({ text: '', done: false });
+      saveState();
+      renderBlocks(note);
+    };
+    document.getElementById('btn-tool-format').onclick = () => document.getElementById('format-subbar').classList.toggle('active');
+    document.getElementById('fmt-bold').onclick = () => toggleFormatStyle('bold');
+    document.getElementById('fmt-italic').onclick = () => toggleFormatStyle('italic');
+    document.getElementById('fmt-large').onclick = () => toggleFormatStyle('large');
+
+    function toggleFormatStyle(k) {
+      const note = notes.find(n => n.id === activeNoteId);
+      if (!note) return;
+      if (!note.style) note.style = { bold: false, italic: false, large: false };
+      note.style[k] = !note.style[k];
+      applyTextStyles(note.style);
+      saveState();
+    }
+    function applyTextStyles(st) {
+      const ta = document.getElementById('editor-textarea');
+      ta.classList.toggle('font-bold', !!st.bold);
+      ta.classList.toggle('font-italic', !!st.italic);
+      ta.classList.toggle('font-large', !!st.large);
+      document.getElementById('fmt-bold').classList.toggle('active', !!st.bold);
+      document.getElementById('fmt-italic').classList.toggle('active', !!st.italic);
+      document.getElementById('fmt-large').classList.toggle('active', !!st.large);
+    }
+
+    // Voice Typing
+    let rec = null, isRec = false;
+    document.getElementById('btn-tool-voice').onclick = () => {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) { showToast('Voice typing not supported'); return; }
+      if (isRec) { stopVoice(); return; }
+      rec = new SR();
+      rec.lang = 'hi-IN';
+      rec.continuous = true;
+      rec.onstart = () => { isRec = true; document.getElementById('btn-tool-voice').classList.add('recording'); showToast('Listening...'); };
+      rec.onresult = e => {
+        const ta = document.getElementById('editor-textarea');
+        ta.value += (ta.value ? ' ' : '') + e.results[e.results.length - 1][0].transcript;
+        saveCurrentNote(true);
+      };
+      rec.onerror = stopVoice;
+      rec.onend = stopVoice;
+      rec.start();
+    };
+    function stopVoice() { if (rec && isRec) rec.stop(); isRec = false; document.getElementById('btn-tool-voice').classList.remove('recording'); }
+
+    // Frosted Add Bottom Sheet
+    document.getElementById('btn-tool-add-sheet').onclick = () => document.getElementById('add-sheet-backdrop').classList.add('active');
+    document.getElementById('btn-close-add-sheet').onclick = () => document.getElementById('add-sheet-backdrop').classList.remove('active');
+    document.getElementById('add-sheet-backdrop').onclick = e => { if (e.target.id === 'add-sheet-backdrop') e.target.classList.remove('active'); };
+
+    document.getElementById('inp-photo').onchange = function() { processSelectedFile(this, 'photo'); };
+    document.getElementById('inp-camera').onchange = function() { processSelectedFile(this, 'photo'); };
+    document.getElementById('inp-doc').onchange = function() { processSelectedFile(this, 'doc'); };
+    document.getElementById('inp-video').onchange = function() { processSelectedFile(this, 'video'); };
+    document.getElementById('inp-audio').onchange = function() { processSelectedFile(this, 'audio'); };
+    document.getElementById('btn-add-doodle').onclick = openDoodlePad;
+    document.getElementById('btn-add-spreadsheet').onclick = insertSpreadsheet;
+
+    // Frosted Share Bottom Sheet
+    function openEditorShareSheet() {
+      closeMenus();
+      shareTargetNote = notes.find(n => n.id === activeNoteId);
+      if (shareTargetNote) document.getElementById('share-sheet-backdrop').classList.add('active');
+    }
+    document.getElementById('btn-editor-share-top').onclick = openEditorShareSheet;
+    document.getElementById('menu-share').onclick = openEditorShareSheet;
+    document.getElementById('btn-share-cancel').onclick = () => document.getElementById('share-sheet-backdrop').classList.remove('active');
+    document.getElementById('share-sheet-backdrop').onclick = e => { if (e.target.id === 'share-sheet-backdrop') e.target.classList.remove('active'); };
+
+    document.getElementById('btn-share-text').onclick = async () => {
+      document.getElementById('share-sheet-backdrop').classList.remove('active');
+      if (!shareTargetNote) return;
+      const full = `${shareTargetNote.title || 'NK Note'}\n\n${shareTargetNote.body}\n\n— NK Notes (Made by Nitish)`.trim();
+      if (navigator.share) {
+        try { await navigator.share({ title: shareTargetNote.title || 'NK Note', text: full }); return; } catch {}
+      }
+      if (navigator.clipboard) { navigator.clipboard.writeText(full); showToast('Note text copied'); }
+    };
+
+    document.getElementById('btn-share-image').onclick = async () => {
+      document.getElementById('share-sheet-backdrop').classList.remove('active');
+      if (!shareTargetNote) return;
+      const imgUrl = createNoteImageCard(shareTargetNote);
+      const file = dataURLtoFile(imgUrl, 'NK_Note.png', 'image/png');
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ title: shareTargetNote.title || 'NK Note', files: [file] }); return; } catch {}
+      }
+      const a = document.createElement('a');
+      a.href = imgUrl;
+      a.download = 'NK_Note_Card.png';
+      a.click();
+      showToast('Note image saved to share');
+    };
+
+    document.getElementById('btn-share-files').onclick = () => {
+      document.getElementById('share-sheet-backdrop').classList.remove('active');
+      if (shareTargetNote) shareFilesToSystemApps(shareTargetNote);
+    };
+
+    document.getElementById('btn-share-link').onclick = async () => {
+      document.getElementById('share-sheet-backdrop').classList.remove('active');
+      const url = location.href;
+      if (navigator.share) {
+        try { await navigator.share({ title: 'NK Notes - Made by Nitish', url }); return; } catch {}
+      }
+      if (navigator.clipboard) { navigator.clipboard.writeText(url); showToast('Link copied'); }
+    };
+
+    // Custom Dark Category Picker
+    function openCategoryPickerModal() {
+      closeMenus();
+      const note = notes.find(n => n.id === activeNoteId);
+      if (!note) return;
+      openModal(`<h3>Select Category</h3>
+        <div class="cat-option-list" id="cat-opt-list">
+          ${categories.map(c => `<div class="cat-option-row ${note.notebook === c ? 'selected' : ''}" data-c="${escapeHTML(c)}">
+            <span>${escapeHTML(c)}</span><span class="radio-circle"></span>
+          </div>`).join('')}
+        </div>
+        <div class="modal-btns"><button type="button" class="modal-btn cancel" onclick="closeModal()">Cancel</button></div>`);
+      document.querySelectorAll('#cat-opt-list .cat-option-row').forEach(r => {
+        r.onclick = () => {
+          note.notebook = r.getAttribute('data-c');
+          document.getElementById('editor-cat-label').textContent = note.notebook;
+          saveState();
+          closeModal();
+          showToast(`Moved to ${note.notebook}`);
+        };
+      });
+    }
+    document.getElementById('btn-editor-category').onclick = openCategoryPickerModal;
+    document.getElementById('menu-move').onclick = openCategoryPickerModal;
+
+    // Editor Dropdown Menu
+    document.getElementById('btn-editor-menu').onclick = () => {
+      const note = notes.find(n => n.id === activeNoteId);
+      document.getElementById('menu-pin-label').textContent = note.pinned ? 'Unpin Widget' : 'Pin Widget';
+      document.getElementById('menu-lock-label').textContent = note.locked ? 'Unlock Note' : 'Lock Note';
+      document.getElementById('menu-overlay').classList.add('active');
+      document.getElementById('editor-menu').style.display = 'flex';
+    };
+
+    document.getElementById('menu-find').onclick = () => {
+      closeMenus();
+      document.getElementById('find-in-note-bar').classList.add('active');
+      document.getElementById('find-note-input').focus();
+    };
+    document.getElementById('btn-close-find').onclick = () => {
+      document.getElementById('find-in-note-bar').classList.remove('active');
+      document.getElementById('find-note-input').value = '';
+      document.getElementById('find-count').textContent = '';
+    };
+    document.getElementById('find-note-input').oninput = () => {
+      const w = document.getElementById('find-note-input').value.toLowerCase();
+      const t = document.getElementById('editor-textarea').value.toLowerCase();
+      if (!w) { document.getElementById('find-count').textContent = ''; return; }
+      document.getElementById('find-count').textContent = `${t.split(w).length - 1} found`;
+      const i = t.indexOf(w);
+      if (i !== -1) { const ta = document.getElementById('editor-textarea'); ta.focus(); ta.setSelectionRange(i, i + w.length); }
+    };
+
+    document.getElementById('menu-pin').onclick = () => {
+      const n = notes.find(x => x.id === activeNoteId);
+      if (n) { n.pinned = !n.pinned; saveState(); showToast(n.pinned ? 'Pinned as Wide Widget' : 'Unpinned'); }
+      closeMenus();
+    };
+
+    document.getElementById('menu-skins').onclick = () => {
+      closeMenus();
+      const n = notes.find(x => x.id === activeNoteId);
+      const skins = [
+        { c: 'skin-black', h: '#09090d' },
+        { c: 'skin-midnight', h: '#0c1526' },
+        { c: 'skin-forest', h: '#0b1f17' },
+        { c: 'skin-burgundy', h: '#240d14' },
+        { c: 'skin-amber', h: '#241a08' }
+      ];
+      openModal(`<h3>Choose Skin</h3><div class="skins-grid">${skins.map(s => `<div class="skin-swatch ${n.skin === s.c ? 'active' : ''}" data-s="${s.c}" style="background:${s.h}"></div>`).join('')}</div>
+        <div class="modal-btns"><button type="button" class="modal-btn cancel" onclick="closeModal()">Close</button></div>`);
+      document.querySelectorAll('.skin-swatch').forEach(el => {
+        el.onclick = () => {
+          n.skin = el.getAttribute('data-s');
+          saveState();
+          document.getElementById('editor-view').className = `view-page active ${n.skin}`;
+          closeModal();
+        };
+      });
+    };
+
+    document.getElementById('menu-reminder').onclick = () => {
+      closeMenus();
+      const n = notes.find(x => x.id === activeNoteId);
+      openModal(`<h3>Set Reminder</h3><input type="datetime-local" id="inp-rem" class="modal-input" value="${n.reminder || ''}">
+        <div class="modal-btns">
+          ${n.reminder ? `<button type="button" class="modal-btn cancel" style="color:#ef4444" id="del-rem">Remove</button>` : ''}
+          <button type="button" class="modal-btn cancel" onclick="closeModal()">Cancel</button>
+          <button type="button" class="modal-btn confirm" id="save-rem">Save</button>
+        </div>`);
+      if (document.getElementById('del-rem')) document.getElementById('del-rem').onclick = () => { n.reminder = ''; saveState(); updateReminderBadge(n); closeModal(); };
+      document.getElementById('save-rem').onclick = () => { n.reminder = document.getElementById('inp-rem').value; saveState(); updateReminderBadge(n); closeModal(); showToast('Reminder set'); };
+    };
+    function updateReminderBadge(n) {
+      const el = document.getElementById('editor-reminder-badge');
+      if (n.reminder) { el.style.display = 'inline-flex'; el.textContent = `Reminder: ${n.reminder.replace('T', ' ')}`; }
+      else el.style.display = 'none';
+    }
+
+    document.getElementById('menu-lock').onclick = () => {
+      closeMenus();
+      const n = notes.find(x => x.id === activeNoteId);
+      if (n.locked) { n.locked = false; n.pinCode = ''; saveState(); showToast('Unlocked'); return; }
+      openModal(`<h3>Set 4-Digit Lock PIN</h3><input type="password" id="inp-pin" maxlength="4" inputmode="numeric" class="modal-input" placeholder="4-digit PIN">
+        <div class="modal-btns"><button type="button" class="modal-btn cancel" onclick="closeModal()">Cancel</button><button type="button" class="modal-btn confirm" id="ok-pin">Lock</button></div>`);
+      document.getElementById('ok-pin').onclick = () => {
+        const p = document.getElementById('inp-pin').value.trim();
+        if (p.length < 4) { showToast('Enter 4 digits'); return; }
+        n.locked = true; n.pinCode = p; saveState(); closeModal(); showToast('Note locked');
+      };
+    };
+
+    document.getElementById('menu-delete').onclick = () => {
+      closeMenus();
+      const n = notes.find(x => x.id === activeNoteId);
+      if (n) { n.deleted = true; n.pinned = false; saveState(); showToast('Moved to Recently Deleted'); }
+      activeNoteId = null;
+      switchPage('home-view');
+      renderHome();
+    };
+
+    // Modals Helpers
+    function openModal(html) { document.getElementById('modal-content').innerHTML = html; document.getElementById('modal-backdrop').classList.add('active'); }
+    function closeModal() { document.getElementById('modal-backdrop').classList.remove('active'); }
+    document.getElementById('modal-backdrop').onclick = e => { if (e.target.id === 'modal-backdrop') closeModal(); };
+
+    function openUnlockModal(note) {
+      openModal(`<h3>Enter PIN to Unlock</h3><input type="password" id="chk-pin" maxlength="4" inputmode="numeric" class="modal-input" placeholder="••••">
+        <div class="modal-btns"><button type="button" class="modal-btn cancel" onclick="closeModal()">Cancel</button><button type="button" class="modal-btn confirm" id="btn-unlk">Unlock</button></div>`);
+      document.getElementById('btn-unlk').onclick = () => {
+        if (document.getElementById('chk-pin').value === note.pinCode) { closeModal(); openEditor(note.id); }
+        else showToast('Wrong PIN!');
+      };
+    }
+
+    function openTrashModal(note) {
+      openModal(`<h3>Recently Deleted</h3><p style="color:#a1a1aa;font-size:0.9rem;margin-bottom:1rem;">Restore this note widget or delete permanently?</p>
+        <div class="modal-btns">
+          <button type="button" class="modal-btn cancel" style="color:#ef4444" id="t-del">Delete Forever</button>
+          <button type="button" class="modal-btn confirm" id="t-res">Restore</button>
+        </div>`);
+      document.getElementById('t-res').onclick = () => { note.deleted = false; saveState(); closeModal(); renderHome(); showToast('Restored'); };
+      document.getElementById('t-del').onclick = () => { notes = notes.filter(x => x.id !== note.id); saveState(); closeModal(); renderHome(); showToast('Deleted'); };
+    }
+
+    startApp();
+  </script>
+</body>
+</html>
+  <script>
+
+  </script>
+</body>
+</html>
